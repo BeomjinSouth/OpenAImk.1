@@ -66,7 +66,7 @@ def generate_assessments(school_type: str, grade: int, subject: str, content: st
     
     try:
         prompt = f"""
-{school_type} {grade}학년 {subject} 과목의 '{content}' 단원에 대해 학생의 성취수준이 '{achievement}'일 때,
+{school_type} {grade}학년 {subject} 과목의 '{content}' 단원에 대해 교과의 성취기준이 '{achievement}'일 때,
 각각의 성취수준(최상/상/중/하/최하)에 해당하는 세부능력 특기사항을 2개씩 작성하고,
 마지막에는 생성된 평가의 주요 포인트를 3줄로 요약해주세요.
 
@@ -89,7 +89,7 @@ def generate_assessments(school_type: str, grade: int, subject: str, content: st
         response = client.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": system_prompt},
+                {"role": "system", "content": system_content},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7
@@ -148,7 +148,7 @@ def main():
         content = st.text_input("학습 내용")
     
     with col3:
-        achievement = st.text_input("현재 성취수준")
+        achievement = st.text_input("교과 성취기준")
     
     if st.button("세부능력 특기사항 생성"):
         if not all([subject, content, achievement]):
