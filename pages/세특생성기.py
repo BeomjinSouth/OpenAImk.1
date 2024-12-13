@@ -89,7 +89,7 @@ def generate_assessments(school_type: str, grade: int, subject: str, content: st
         response = client.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": system prompt},
+                {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7
