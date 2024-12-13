@@ -5,14 +5,11 @@ from typing import List
 # Streamlit 페이지 설정
 st.set_page_config(page_title="문장 변형 생성기", page_icon="✍️")
 
-# OpenAI API 키 입력 필드
-api_key = st.sidebar.text_input("OpenAI API 키를 입력하세요", type="password")
-
-def generate_variations(input_text: str, num_variations: int, api_key: str) -> List[str]:
+def generate_variations(input_text: str, num_variations: int) -> List[str]:
     """GPT를 사용하여 입력 문장의 변형을 생성합니다."""
     
-    # 새로운 클라이언트 초기화 방식
-    client = OpenAI(api_key=api_key)
+    # Streamlit secrets에서 API 키 가져오기
+    client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
     
     try:
         # GPT에게 보낼 프롬프트 작성
@@ -27,7 +24,6 @@ def generate_variations(input_text: str, num_variations: int, api_key: str) -> L
 4. 자연스러운 한국어로 표현
 """
 
-        # 새로운 API 호출 방식
         response = client.chat.completions.create(
             model="gpt-4",
             messages=[
@@ -37,9 +33,7 @@ def generate_variations(input_text: str, num_variations: int, api_key: str) -> L
             temperature=0.7
         )
         
-        # 새로운 응답 구조에 맞게 수정
         variations = response.choices[0].message.content.strip().split('\n')
-        # 빈 줄 제거 및 숫자. 형식 정리
         variations = [line.strip() for line in variations if line.strip()]
         
         return variations
@@ -57,16 +51,12 @@ def main():
     num_variations = st.number_input("생성할 문장 수:", min_value=1, max_value=10, value=3)
     
     if st.button("변형 생성하기"):
-        if not api_key:
-            st.error("OpenAI API 키를 입력해주세요!")
-            return
-        
         if not input_text:
             st.warning("문장을 입력해주세요!")
             return
         
         with st.spinner("문장 변형을 생성중입니다..."):
-            variations = generate_variations(input_text, num_variations, api_key)
+            variations = generate_variations(input_text, num_variations)
             
             if variations:
                 st.success("생성 완료!")
